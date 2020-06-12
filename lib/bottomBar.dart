@@ -3,104 +3,119 @@ import 'package:flutter/material.dart';
 class BottomBar extends StatefulWidget {
   const BottomBar({
     Key key,
-    this.title = "P",
   }) : super(key: key);
-
-  final String title;
 
   @override
   _BottomBarState createState() => _BottomBarState();
 }
 
 class _BottomBarState extends State<BottomBar> {
-  String text = "text";
+  static double sleep = 0;
+  static double weightMorning = 0;
+  static double weightEvening = 0;
+  TextEditingController sController =
+      new TextEditingController(text: sleep.toString());
+  TextEditingController wMorningController =
+      new TextEditingController(text: weightMorning.toString());
+  TextEditingController wEveningController =
+      new TextEditingController(text: weightEvening.toString());
+
+  @override
+  void initState() {
+    super.initState();
+
+    sController.addListener(_svalue);
+  }
+
+  _svalue() {
+    print("hallo");
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the widget tree.
+    // This also removes the _printLatestValue listener.
+    sController.dispose();
+    wMorningController.dispose();
+    wEveningController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<String> s = ["Jougle", "Parkour", "Swimming"];
-    List<TextEditingController> txt = new List();
-    for (var item in s) {
-      txt.add(TextEditingController(text: item));
-    }
-    return Expanded(
-      flex: 1,
-      child: Column(children: <Widget>[
-        Padding(padding: EdgeInsets.fromLTRB(2, 5, 2, 5)),
+    const double FONT_SIZE = 20;
+    const String FONT_NAME = 'DancingScript';
+    return Row(
+      children: <Widget>[
         Expanded(
           flex: 1,
-          child: Center(
-            child: Text(
-              widget.title,
-              textDirection: TextDirection.ltr,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 46,
-                  fontFamily: 'DancingScript'),
-            ),
+          child: Column(
+            children: [
+              Expanded(
+                child: Center(
+                  child: TextField(
+//                      controller: sController,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                        border: InputBorder.none, hintText: 'Weight Morning'),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: FONT_SIZE,
+                        fontFamily: FONT_NAME),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         Expanded(
-          flex: 10,
-//          child: Container(
-//            color: Colors.red,
-          child: ListView.builder(
-            itemCount: txt.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Padding(
-//                  padding: EdgeInsets.all(0),
-                padding: EdgeInsets.fromLTRB(8, 0, 5, 0),
-
-//                  child: Text(
-//                    item,
-//                    textAlign: TextAlign.center,
-////                      overflow: TextOverflow.ellipsis,
-//                    style: TextStyle(
-//                        fontWeight: FontWeight.w900,
-//                        fontSize: 26,
-//                        fontFamily: 'DancingScript'),
-//                  ),
+          flex: 1,
+          child: Column(
+            children: [
+              Expanded(
                 child: Center(
                   child: TextField(
-                    controller: txt[index],
+                    textAlign: TextAlign.center,
+//                      controller: sController,
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                        border: InputBorder.none, hintText: 'Enter a  term'),
+                      border: InputBorder.none,
+                      hintText: 'Sleep',
+                    ),
                     style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 26,
-                        fontFamily: 'DancingScript'),
+                        fontSize: FONT_SIZE,
+                        fontFamily: FONT_NAME),
                   ),
                 ),
-              );
-            },
+              ),
+            ],
           ),
-
-//              for (var item in s)
-//                Padding(
-//                  padding: EdgeInsets.all(0),
-////                  padding: EdgeInsets.fromLTRB(5, 20, 5, 0),
-//
-////                  child: Text(
-////                    item,
-////                    textAlign: TextAlign.center,
-//////                      overflow: TextOverflow.ellipsis,
-////                    style: TextStyle(
-////                        fontWeight: FontWeight.w900,
-////                        fontSize: 26,
-////                        fontFamily: 'DancingScript'),
-////                  ),
-//                  child: Center(
-//                    child: TextField(
-//                      decoration: InputDecoration(
-//                          border: InputBorder.none, hintText: 'Enter a  term', te),
-//                      style: TextStyle(
-//                          fontWeight: FontWeight.w900,
-//                          fontSize: 26,
-//                          fontFamily: 'DancingScript'),
-//                    ),
-//                  ),
-//                ),
         ),
-      ]),
+        Expanded(
+          flex: 1,
+          child: Column(
+            children: [
+              Expanded(
+                child: Center(
+                  child: TextField(
+//                      controller: sController,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                        border: InputBorder.none, hintText: 'Weight Evening'),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: FONT_SIZE,
+                        fontFamily: FONT_NAME),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
