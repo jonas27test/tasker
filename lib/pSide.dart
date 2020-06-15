@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:tasker/main.dart';
+import './day.dart';
 
 class PSide extends StatefulWidget {
   const PSide({
@@ -10,21 +13,41 @@ class PSide extends StatefulWidget {
 
   final String title;
 
-//  final bool overwrite;
 
   @override
   _PSideState createState() => _PSideState();
 }
 
 class _PSideState extends State<PSide> {
-  List<Task> tasks = [
-    new Task("Jougle", false),
-    new Task("Swim", false),
-    new Task("Parkour", false),
-    new Task("blaa", false),
-    new Task("Flutter", true),
-    new Task("", false),
-  ];
+
+  static DateTime date = DateTime.now();
+  List<Task> tasks = [];
+
+  Future<http.Response> postList(String title) {
+    return http.post(
+      'https://jsonplaceholder.typicode.com/albums',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'title': title,
+      }),
+    );
+  }
+
+  Future<http.Response> fetchDay(String date) {
+    return http.post(
+      'https://jsonplaceholder.typicode.com/albums',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'date': date,
+      }),
+    );
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +59,7 @@ class _PSideState extends State<PSide> {
           child: Center(
             child: Text(
               widget.title,
-              textDirection: TextDirection.ltr,
+//              textDirection: TextDirection.ltr,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 46,
@@ -77,7 +100,7 @@ class _PSideState extends State<PSide> {
                               n--;
                             }
                           }
-                          tasks.add(new Task("", false));
+                            tasks.add(new Task("", false));
                           setState(() {});
                           print(tasks.length);
                         },
@@ -106,14 +129,4 @@ class _PSideState extends State<PSide> {
   }
 }
 
-class Task {
-  Task(String name, bool done) {
-    this.name = name;
-    this.done = done;
-    this.controller = new TextEditingController(text: name);
-  }
 
-  String name;
-  bool done;
-  TextEditingController controller;
-}
