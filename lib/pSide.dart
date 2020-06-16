@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import './day.dart';
+import './state.dart';
 
 class PSide extends StatefulWidget {
   const PSide({
@@ -13,17 +13,15 @@ class PSide extends StatefulWidget {
 
   final String title;
 
-
   @override
   _PSideState createState() => _PSideState();
 }
 
 class _PSideState extends State<PSide> {
-
   static DateTime date = DateTime.now();
-  List<Task> tasks = [];
+  List<TaskModel> tasks = [];
 
-  Future<http.Response> postList(String title) {
+  Future<http.Response> postTask(String title) {
     return http.post(
       'https://jsonplaceholder.typicode.com/albums',
       headers: <String, String>{
@@ -47,10 +45,21 @@ class _PSideState extends State<PSide> {
     );
   }
 
-
+  prepareList() {
+    for (var n = 0; n < this.tasks.length; n++) {
+      this.tasks[n].name = this.tasks[n].controller.text;
+//      print(this.tasks[n].name);
+      if (this.tasks[n].name == "") {
+        tasks.remove(this.tasks[n]);
+        n--;
+      }
+    }
+    this.tasks.add(new TaskModel("", false));
+  }
 
   @override
   Widget build(BuildContext context) {
+    prepareList();
     return Expanded(
       flex: 1,
       child: Column(children: <Widget>[
@@ -92,17 +101,8 @@ class _PSideState extends State<PSide> {
                         onEditingComplete: () {
                           WidgetsBinding.instance.focusManager.primaryFocus
                               ?.unfocus();
-                          for (var n = 0; n < tasks.length; n++) {
-                            tasks[n].name = tasks[n].controller.text;
-                            print(tasks[n].name);
-                            if (tasks[n].name == "") {
-                              tasks.remove(tasks[n]);
-                              n--;
-                            }
-                          }
-                            tasks.add(new Task("", false));
+                          prepareList();
                           setState(() {});
-                          print(tasks.length);
                         },
                         controller: tasks[index].controller,
                         decoration: InputDecoration(
@@ -128,5 +128,3 @@ class _PSideState extends State<PSide> {
     );
   }
 }
-
-
