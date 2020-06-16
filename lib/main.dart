@@ -8,7 +8,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => SettingsModel()),
-//        ChangeNotifierProvider(create: (context) => DayModel()),
+        ChangeNotifierProvider(create: (context) => DayModel()),
       ],
       child: MyApp(),
     ),
