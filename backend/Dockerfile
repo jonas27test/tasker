@@ -9,10 +9,10 @@ RUN useradd scratchuser && \
     export GOPATH="" && go mod vendor && \
     CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o /tasker-backend ./cmd/
 
-# FROM scratch
-# COPY --from=builder /etc/ssl/certs/ /etc/ssl/certs
-# COPY --from=builder /tasker-backend /tasker-backend
-# COPY --from=builder /etc/passwd /etc/passwd
-# USER scratchuser
-# CMD /tasker-backend
+FROM alpine
+COPY --from=builder /etc/ssl/certs/ /etc/ssl/certs
+COPY --from=builder /tasker-backend /tasker-backend
+COPY --from=builder /etc/passwd /etc/passwd
+USER scratchuser
+CMD /tasker-backend
 ENTRYPOINT ["/tasker-backend"]

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tasker/state.dart';
+import 'package:tasker/settingsPage/settingsModel.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({

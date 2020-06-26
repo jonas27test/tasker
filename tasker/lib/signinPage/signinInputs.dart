@@ -40,7 +40,6 @@ class SigninInputsState extends State<SigninInputs> {
       return _showDialog("Set Email and Password");
     }
     User u = new User(emailController.text, passController.text);
-    print(u.toJson());
     final http.Response response = await http.post(
       Statics.AUTH_URL + '/signup',
       headers: <String, String>{
@@ -56,12 +55,11 @@ class SigninInputsState extends State<SigninInputs> {
   }
 
   Future<void> _signin() async {
+    print(Statics.AUTH_URL + '/signin');
     if (emailController.text == "" || passController.text == "") {
       return _showDialog("Set Email and Password");
     }
     User u = new User(emailController.text, passController.text);
-    print(u.toJson());
-    print(Statics.AUTH_URL + '/signin');
     final http.Response response = await http.post(
       Statics.AUTH_URL + '/signin',
       headers: <String, String>{

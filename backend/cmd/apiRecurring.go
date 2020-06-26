@@ -13,6 +13,12 @@ type Recurrings struct {
 }
 
 func (c *Controller) getRecurring(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		return
+	}
+
+	log.Println("get Recurring")
 	user := c.verifyJWT(r.Header.Get("Authorization"))
 	coll := Collection{Coll: c.collection(user)}
 	rec, err := json.Marshal(coll.getRecurrings())
@@ -23,6 +29,12 @@ func (c *Controller) getRecurring(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) setRecurringPurpose(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		return
+	}
+
+	log.Println("set Recurring Purpose")
 	user := c.verifyJWT(r.Header.Get("Authorization"))
 	tasks := unmarshalRecurring(w, r)
 	coll := Collection{Coll: c.collection(user)}
@@ -30,6 +42,12 @@ func (c *Controller) setRecurringPurpose(w http.ResponseWriter, r *http.Request)
 }
 
 func (c *Controller) setRecurringPleasure(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		return
+	}
+
+	log.Println("set Recurring Pleasure")
 	user := c.verifyJWT(r.Header.Get("Authorization"))
 	tasks := unmarshalRecurring(w, r)
 	coll := Collection{Coll: c.collection(user)}

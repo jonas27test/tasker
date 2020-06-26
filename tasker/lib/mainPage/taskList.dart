@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasker/mainPage/pSide.dart';
-import 'package:tasker/state.dart';
+import 'package:tasker/settingsPage/settingsModel.dart';
 
 class TaskList extends StatefulWidget {
   const TaskList({
@@ -48,6 +48,7 @@ class _TaskListState extends State<TaskList> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(0, 40, 0, 20),
               child: Container(
+                constraints: BoxConstraints(maxWidth: 1),
                 color: Colors.black,
               ),
             ),

@@ -2,7 +2,7 @@
 
 ## build push docker
 ```sh
-export VERSION=v0.1.5
+export VERSION=v0.1.8
 docker build -t jonas27test/tasker-backend:$VERSION .
 docker push jonas27test/tasker-backend:$VERSION
 docker run 

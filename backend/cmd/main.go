@@ -48,6 +48,9 @@ func main() {
 	http.HandleFunc("/setWeightMorning", c.setWeigtMorning)
 	http.HandleFunc("/setWeightEvening", c.setWeightEvening)
 	http.HandleFunc("/setSleep", c.setSleep)
+	http.HandleFunc("/getRecurring", c.getRecurring)
+	http.HandleFunc("/setRecurringPurpose", c.setRecurringPurpose)
+	http.HandleFunc("/setRecurringPleasure", c.setRecurringPleasure)
 	http.HandleFunc("/healthz", healthz)
 	log.Fatal(http.ListenAndServe(*port, nil))
 }

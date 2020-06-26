@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:tasker/signinPage/userModel.dart';
 import 'package:tasker/signinPage/signinInputs.dart';
 import 'package:tasker/mainPage/taskPage.dart';
-import 'package:tasker/state.dart';
+import 'package:tasker/mainPage/dayModel.dart';
 import 'package:tasker/staticVariables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,9 +41,9 @@ class SigninPageState extends State<SigninPage> {
   _retrieveToken() async {
     final prefs = await SharedPreferences.getInstance();
     String token = prefs.getString("bearer");
-    if (token == null) {
+    if (token != null) {
       Provider.of<DayModel>(context, listen: false)
-          .fetchDay(DateFormat('yyyy-MM-dd').format(DateTime.now()));
+          .initDay(DateFormat('yyyy-MM-dd').format(DateTime.now()), context);
       if (Provider.of<DayModel>(context, listen: false) != null) {
         _gotoTaskPage();
       }
@@ -64,26 +64,32 @@ class SigninPageState extends State<SigninPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24.0),
-        child: Center(
-          child: ListView(
+      body: Center(
+        child: Container(
+          constraints: BoxConstraints(maxWidth: Statics.MAX_WIDTH),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 24.0),
+            child: Center(
+              child: ListView(
 //            mainAxisAlignment: MainAxisAlignment.center,
 //            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(40.0),
-                child: Container(
-                  child: Image(image: AssetImage('assets/img/logo/logo.gif')),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(40.0),
+                    child: Container(
+                      constraints: BoxConstraints(maxHeight: 520),
+                      child: Image(image: AssetImage('assets/img/logo/logo.gif')),
 //                          'assets/img/logo/tasker_logo_thick_trans.png')),
-                ),
+                    ),
+                  ),
+                  AnimatedOpacity(
+                      opacity: _visible ? 1.0 : 0.0,
+                      duration: Duration(milliseconds: 1000),
+                      child: SigninInputs()
+                  ),
+                ],
               ),
-              AnimatedOpacity(
-                  opacity: _visible ? 1.0 : 0.0,
-                  duration: Duration(milliseconds: 1000),
-                  child: SigninInputs()
-              ),
-            ],
+            ),
           ),
         ),
       ),

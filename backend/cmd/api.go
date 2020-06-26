@@ -16,6 +16,11 @@ type Controller struct {
 
 func (c *Controller) getDay(w http.ResponseWriter, r *http.Request) {
 	log.Println("getDay")
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		return
+	}
+
 	user := c.verifyJWT(r.Header.Get("Authorization"))
 	date := r.URL.Query()["date"][0]
 	coll := Collection{Coll: c.collection(user)}
@@ -28,6 +33,11 @@ func (c *Controller) getDay(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) setSleep(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		return
+	}
+
 	user := c.verifyJWT(r.Header.Get("Authorization"))
 	date := r.URL.Query()["date"][0]
 	sleep, err := strconv.ParseFloat(r.URL.Query()["value"][0], 64)
@@ -40,6 +50,11 @@ func (c *Controller) setSleep(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) setWeigtMorning(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		return
+	}
+
 	user := c.verifyJWT(r.Header.Get("Authorization"))
 	date := r.URL.Query()["date"][0]
 	weightMorning, err := strconv.ParseFloat(r.URL.Query()["value"][0], 64)
@@ -53,6 +68,11 @@ func (c *Controller) setWeigtMorning(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) setWeightEvening(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		return
+	}
+
 	user := c.verifyJWT(r.Header.Get("Authorization"))
 	date := r.URL.Query()["date"][0]
 	weightEvening, err := strconv.ParseFloat(r.URL.Query()["value"][0], 64)
@@ -65,6 +85,11 @@ func (c *Controller) setWeightEvening(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) setPleasureList(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		return
+	}
+
 	user := c.verifyJWT(r.Header.Get("Authorization"))
 	tasks := getTaskList(w, r)
 	date := r.URL.Query()["date"][0]
@@ -73,6 +98,11 @@ func (c *Controller) setPleasureList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) setPurposeList(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		return
+	}
+
 	user := c.verifyJWT(r.Header.Get("Authorization"))
 	tasks := getTaskList(w, r)
 	date := r.URL.Query()["date"][0]
@@ -93,4 +123,10 @@ func getTaskList(w http.ResponseWriter, r *http.Request) []Task {
 
 func (c *Controller) collection(user string) *mongo.Collection {
 	return c.DBClient.Database("tasker").Collection(user)
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../state.dart';
+import 'dayModel.dart';
 
 class PSide extends StatefulWidget {
   const PSide({
@@ -16,6 +16,47 @@ class PSide extends StatefulWidget {
 
 class _PSideState extends State<PSide> {
   List<TaskModel> tasks;
+
+  Future<void> _dialog(context, String type, int index) async {
+    return showDialog<void>(
+      context: context,
+//      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
+          ),
+//            title: Text('Move to next day'),
+          content: FlatButton(
+            child: Text(
+              'Move to next day',
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 26,
+//                fontFamily: 'DancingScript',
+              ),
+            ),
+            onPressed: () {
+              print("move");
+              Navigator.of(context).pop();
+              if (type == 'pp') {
+                Provider.of<DayModel>(context, listen: false)
+                    .movePurposeItemNextDay(index);
+              } else {}
+            },
+          ),
+          actions: [
+            FlatButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +81,9 @@ class _PSideState extends State<PSide> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 0, 8.0),
             child: Consumer<DayModel>(builder: (context, day, child) {
-              if (widget.title == "Purpose" ){
+              if (widget.title == "Purpose") {
                 this.tasks = day.getPurposeList();
-              }else {
+              } else {
                 this.tasks = day.getPleasureList();
               }
               return ListView.builder(
@@ -53,20 +94,36 @@ class _PSideState extends State<PSide> {
                     padding: EdgeInsets.fromLTRB(8, 0, 5, 0),
                     child: Center(
                       child: GestureDetector(
+                        onLongPress: () {
+                          print('long-press');
+                          if (widget.title == "Purpose") {
+                            _dialog(context, 'pp', index);
+                          } else {
+                            _dialog(context, 'pl', index);
+                          }
+                        },
                         onDoubleTap: () {
-                          tasks[index].getDone()
-                              ? tasks[index].setDone(false)
-                              : tasks[index].setDone(true);
+                          print("double");
+                          if (widget.title == "Purpose") {
+                            day.setPurposeTaskDone(index);
+                          } else {
+                            day.setPleasureTaskDone(index);
+                          }
+//                          setState(() {});
+                          WidgetsBinding.instance.focusManager.primaryFocus
+                              .unfocus();
                         },
                         child: TextField(
-                          enabled: tasks[index].getDone() ? false : true,
+//                          enabled: tasks[index].getDone() ? false : true,
                           onEditingComplete: () {
                             WidgetsBinding.instance.focusManager.primaryFocus
-                                ?.unfocus();
-                            if(widget.title == "Purpose"){
-                              day.setPurposeTaskName(index, tasks[index].controller.text);
-                            }else {
-                              day.setPleasureTaskName(index, tasks[index].controller.text);
+                                .unfocus();
+                            if (widget.title == "Purpose") {
+                              day.setPurposeTaskName(
+                                  index, tasks[index].controller.text);
+                            } else {
+                              day.setPleasureTaskName(
+                                  index, tasks[index].controller.text);
                             }
                           },
                           controller: tasks[index].controller,

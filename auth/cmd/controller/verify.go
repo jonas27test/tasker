@@ -10,6 +10,10 @@ import (
 
 func (c *Controller) Verify(w http.ResponseWriter, r *http.Request) {
 	log.Println("verify")
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		return
+	}
 	authHeader := r.Header.Get("Authorization")
 	headerToken := strings.Split(authHeader, " ")
 	if len(headerToken) == 2 {

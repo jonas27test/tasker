@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tasker/state.dart';
+import 'package:tasker/mainPage/dayModel.dart';
+import 'dart:convert';
+import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:tasker/recurringPage/recurringModel.dart';
 import 'package:tasker/staticVariables.dart';
 
 class DayModel extends ChangeNotifier {
@@ -22,6 +25,9 @@ class DayModel extends ChangeNotifier {
   DayModel();
 
   void setVariable(String endpoint, TextEditingController c) async {
+    if (c.text == "") {
+      return;
+    }
     final prefs = await SharedPreferences.getInstance();
     final response = await http.get(
         Statics.TASKER_URL +
@@ -50,6 +56,10 @@ class DayModel extends ChangeNotifier {
 
   void setPurposeTaskName(int index, String name) {
     purposeList = listDeleteEmpty(purposeList);
+    if (name == "") {
+      notifyListeners();
+      return;
+    }
     if (index + 1 > purposeList.length) {
       purposeList.add(new TaskModel(name, false));
     } else {
@@ -61,6 +71,10 @@ class DayModel extends ChangeNotifier {
 
   void setPleasureTaskName(int index, String name) {
     pleasureList = listDeleteEmpty(pleasureList);
+    if (name == "") {
+      notifyListeners();
+      return;
+    }
     if (index + 1 > pleasureList.length) {
       pleasureList.add(new TaskModel(name, false));
     } else {
@@ -83,6 +97,46 @@ class DayModel extends ChangeNotifier {
     );
   }
 
+  addRecurring(RecurringModel r) {
+    String date = DateFormat('EEEE').format(DateTime.parse(dateString));
+    r.recurringPurpose.forEach((e) {
+      if (!contains(purposeList, e.name)) {
+        if (shouldAddTask(date, e)) {
+          purposeList.add(new TaskModel(e.name, false));
+        }
+      }
+    });
+    r.recurringPleasure.forEach((e) {
+      if (!contains(pleasureList, e.name)) {
+        if (shouldAddTask(date, e)) {
+          pleasureList.add(new TaskModel(e.name, false));
+        }
+      }
+    });
+    notifyListeners();
+  }
+
+  bool shouldAddTask(String date, RecurringTask e) {
+    if ((date == "Monday" && e.mon) ||
+        (date == "Tuesday" && e.tue) ||
+        (date == "Wednesday" && e.wed) ||
+        (date == "Thursday" && e.thu) ||
+        (date == "Friday" && e.fri) ||
+        (date == "Saturday" && e.sat) ||
+        (date == "Sunday" && e.sun)) {
+      return true;
+    }
+    return false;
+  }
+
+  bool contains(List<TaskModel> list, String name) {
+    for (var e in list) {
+      if (e.name == name) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   void setPurposeTaskDone(int index) {
     purposeList[index].done = !purposeList[index].done;
@@ -96,11 +150,37 @@ class DayModel extends ChangeNotifier {
     notifyListeners();
   }
 
-
   List<TaskModel> getPurposeList() {
     List<TaskModel> list = this.purposeList.toList();
     list.add(new TaskModel("", false));
     return list;
+  }
+
+  Future<List<TaskModel>> movePurposeItemNextDay(int index) async {
+    String newDate = getNewDate(1);
+    String oldDate = dateString;
+    final prefs = await SharedPreferences.getInstance();
+    final response = await http
+        .get(Statics.TASKER_URL + '/getDay?date=' + newDate, headers: {
+      HttpHeaders.authorizationHeader: 'bearer: ' + prefs.getString('bearer')
+    });
+    if (response.statusCode == 200) {
+      List<TaskModel> pl =
+          DayModel.fromJson(json.decode(response.body)).purposeList;
+      pl.add(this.purposeList[index]);
+      this.dateString = newDate;
+      Future<http.Response> future = postList(pl, "/setPurposeList");
+      future.then((value) => {
+            if (value.statusCode == 200)
+              {
+                this.dateString = oldDate,
+                this.purposeList.removeAt(index),
+                postList(purposeList, "/setPurposeList"),
+                notifyListeners(),
+              },
+          });
+//      print(dateString);
+    }
   }
 
   List<TaskModel> getPleasureList() {
@@ -111,7 +191,7 @@ class DayModel extends ChangeNotifier {
 
   List<TaskModel> listDeleteEmpty(List<TaskModel> tasks) {
     for (var n = 0; n < tasks.length; n++) {
-      if (tasks[n].name == "" || tasks[n].name == null) {
+      if (tasks[n].controller.text == "") {
         tasks.remove(tasks[n]);
         n--;
       }
@@ -121,6 +201,9 @@ class DayModel extends ChangeNotifier {
 
   void setDay(DayModel d) {
     dateString = d.dateString;
+    wMorningController.text = "";
+    wEveningController.text = "";
+    sleepController.text = "";
     if (d.weightMorning != 0) {
       wMorningController.text = d.weightMorning.toString();
     }
@@ -147,17 +230,29 @@ class DayModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  fetchDay(String date) async {
+  initDay(String date, context) {
+    fetchDay(date, context);
+  }
+
+  fetchDay(String date, context) async {
     final prefs = await SharedPreferences.getInstance();
-    String bearer = prefs.getString('bearer');
-    print(bearer);
     final response = await http
         .get(Statics.TASKER_URL + '/getDay?date=' + date, headers: {
       HttpHeaders.authorizationHeader: 'bearer: ' + prefs.getString('bearer')
     });
     if (response.statusCode == 200) {
       setDay(DayModel.fromJson(json.decode(response.body)));
-      notifyListeners();
+
+      final responseRec = await http
+          .get(Statics.TASKER_URL + '/getRecurring', headers: {
+        HttpHeaders.authorizationHeader: 'bearer: ' + prefs.getString('bearer')
+      });
+      if (responseRec.statusCode == 200) {
+        RecurringModel rec =
+            RecurringModel.fromJson(json.decode(responseRec.body));
+        addRecurring(rec);
+        notifyListeners();
+      }
     } else {
       print(response.statusCode);
       throw Exception('Failed to load day');

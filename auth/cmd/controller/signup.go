@@ -10,6 +10,10 @@ import (
 
 func (c *Controller) Signup(w http.ResponseWriter, r *http.Request) {
 	log.Println("signup")
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		return
+	}
 	u := db.UserFromRequest(w, r)
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), 14)

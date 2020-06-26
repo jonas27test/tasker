@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../state.dart';
+import 'dayModel.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({
@@ -40,7 +40,9 @@ class _BottomBarState extends State<BottomBar> {
                 child: Center(
                   child: TextField(
                     controller: day.wMorningController,
-                    onEditingComplete: (){day.setVariable('/setWeightMorning',day.wMorningController);},
+                    onEditingComplete: (){day.setVariable('/setWeightMorning',day.wMorningController);
+                    WidgetsBinding.instance.focusManager.primaryFocus
+                        .unfocus();},
                     textAlign: TextAlign.center,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
@@ -69,7 +71,9 @@ class _BottomBarState extends State<BottomBar> {
                       border: InputBorder.none,
                       hintText: 'Sleep',
                     ),
-                    onEditingComplete: (){day.setVariable('/setSleep',day.sleepController);},
+                    onEditingComplete: (){day.setVariable('/setSleep',day.sleepController);
+                    WidgetsBinding.instance.focusManager.primaryFocus
+                        .unfocus();},
                     style: TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: FONT_SIZE,
@@ -90,7 +94,9 @@ class _BottomBarState extends State<BottomBar> {
                       controller: day.wEveningController,
                     textAlign: TextAlign.center,
                     keyboardType: TextInputType.number,
-                    onEditingComplete: (){day.setVariable('/setWeightEvning',day.wEveningController);},
+                    onEditingComplete: (){day.setVariable('/setWeightEvening',day.wEveningController);
+                    WidgetsBinding.instance.focusManager.primaryFocus
+                        .unfocus();},
                     decoration: InputDecoration(
                         border: InputBorder.none, hintText: 'Weight Evening'),
                     style: TextStyle(

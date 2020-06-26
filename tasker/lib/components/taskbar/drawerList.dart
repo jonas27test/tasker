@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasker/mainPage/taskPage.dart';
-import 'package:tasker/components/taskbar/settingsPage.dart';
+import 'package:tasker/mainPage/dayModel.dart';
 import 'package:tasker/signinPage/signinPage.dart';
-import 'package:tasker/state.dart';
+import 'package:tasker/recurringPage/recurringPage.dart';
+import 'package:tasker/recurringPage/recurringModel.dart';
+import 'package:tasker/settingsPage/settingsModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 class DrawerList extends StatefulWidget {
   const DrawerList({
     Key key,
-    this.reload,
   }) : super(key: key);
-
-  final Function reload;
 
   @override
   _DrawerListState createState() => _DrawerListState();
@@ -25,6 +23,7 @@ class _DrawerListState extends State<DrawerList> {
 
   _logout() async {
     Provider.of<DayModel>(context, listen: false).reset();
+    Provider.of<RecurringModel>(context, listen: false).reset();
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('bearer', null);
     Navigator.pushReplacement(
@@ -36,12 +35,14 @@ class _DrawerListState extends State<DrawerList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white70,
+      color: Color(0xFFE0E0E0),
       child: ListView(
         children: <Widget>[
           Consumer<SettingsModel>(builder: (context, settings, child) {
             return CheckboxListTile(
-                title: const Text('Split View'),
+                title: const Text('Split View', style: TextStyle(
+                  fontSize: 18,
+                ),),
                 value: settings.getSplitView(),
                 onChanged: (bool splitView) {
                   setState(() {
@@ -49,6 +50,59 @@ class _DrawerListState extends State<DrawerList> {
                   });
                 });
           }),
+          Consumer<SettingsModel>(builder: (context, settings, child) {
+            return CheckboxListTile(
+                title: const Text('Health Data', style: TextStyle(
+                  fontSize: 18,
+                ),),
+                value: settings.health,
+                onChanged: (bool health) {
+                  setState(() {
+                    settings.setHealth(health);
+                  });
+                });
+          }),
+
+          FlatButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => TaskPage()),
+              );
+            },
+            child: Container(
+              child: Text(
+                'Tasker',
+                textDirection: TextDirection.ltr,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ),
+
+
+          FlatButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => RecurringPage()),
+              );
+            },
+            child: Container(
+              child: Text(
+                'Recurrings',
+//                textDirection: TextDirection.ltr,
+//                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ),
           FlatButton(
             child: Text(
               "Logout",
@@ -58,26 +112,26 @@ class _DrawerListState extends State<DrawerList> {
               _logout();
             },
           ),
-          FlatButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingsPage()),
-              );
-            },
-            child: Container(
-              child: Text(
-                'Settings',
-                textDirection: TextDirection.ltr,
-                textAlign: TextAlign.left,
-                style: TextStyle(
-//                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-//                  fontFamily: 'DancingScript'
-                ),
-              ),
-            ),
-          ),
+//          FlatButton(
+//            onPressed: () {
+//              Navigator.push(
+//                context,
+//                MaterialPageRoute(builder: (context) => SettingsPage()),
+//              );
+//            },
+//            child: Container(
+//              child: Text(
+//                'Settings',
+//                textDirection: TextDirection.ltr,
+//                textAlign: TextAlign.left,
+//                style: TextStyle(
+////                  fontWeight: FontWeight.bold,
+//                  fontSize: 16,
+////                  fontFamily: 'DancingScript'
+//                ),
+//              ),
+//            ),
+//          ),
         ],
       ),
     );

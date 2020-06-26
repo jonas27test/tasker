@@ -12,6 +12,10 @@ import (
 
 func (c *Controller) UserID(w http.ResponseWriter, r *http.Request) {
 	log.Println("userID")
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		return
+	}
 	if os.Getenv("PROD") == "true" && !strings.Contains(r.RequestURI, "tasker.jwt-backend") {
 		log.Panicln("called from outside cluster")
 	}

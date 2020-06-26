@@ -11,6 +11,10 @@ import (
 
 func (c *Controller) Signin(w http.ResponseWriter, r *http.Request) {
 	log.Println("signin")
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		return
+	}
 	u := db.UserFromRequest(w, r)
 
 	dbUser := c.DB.RetrieveUser(u.Email)
