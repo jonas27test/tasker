@@ -39,7 +39,7 @@ class _TaskListState extends State<TaskList> {
           Expanded(
             flex: 50,
             child: Column(children: <Widget>[
-              PSide(title: "Purpose"),
+              PSide(title: "Purpose",id: 'pp',),
             ]),
 //                    ),
           ),
@@ -57,7 +57,7 @@ class _TaskListState extends State<TaskList> {
             flex: 50,
             child: Column(children: <Widget>[
               PSide(
-                title: "Pleasure",
+                title: "Pleasure", id: 'pl',
               ),
             ]),
           )
@@ -75,7 +75,7 @@ class _TaskListState extends State<TaskList> {
               child: Column(
                 children: [
                   PSide(
-                    title: "Purpose",
+                    title: "Purpose", id: 'pp',
                   ),
                 ],
               )),
@@ -135,7 +135,7 @@ class _TaskListState extends State<TaskList> {
               child: Column(
                 children: [
                   PSide(
-                    title: "Pleasure",
+                    title: "Pleasure", id: 'pl',
                   ),
                 ],
               )),
