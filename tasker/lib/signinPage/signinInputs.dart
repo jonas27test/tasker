@@ -18,14 +18,23 @@ class SigninInputs extends StatefulWidget {
 }
 
 class SigninInputsState extends State<SigninInputs> {
-  final emailController = TextEditingController();
-  final passController = TextEditingController();
+  TextEditingController emailController;
+  TextEditingController passController;
+  FocusNode passwordFocus;
 
   @override
   void dispose() {
     emailController.dispose();
     passController.dispose();
+    passwordFocus.dispose();
     super.dispose();
+  }
+
+  @override
+  initState() {
+    emailController = TextEditingController();
+    passController = TextEditingController();
+    passwordFocus = FocusNode();
   }
 
   void _gotoTaskPage() {
@@ -101,6 +110,13 @@ class SigninInputsState extends State<SigninInputs> {
     return TextField(
       controller: c,
       obscureText: obscure,
+      onSubmitted: (e) => {
+        if (!obscure) {
+          print('email field'),
+          passwordFocus.requestFocus(),
+        }
+      },
+      focusNode: obscure? passwordFocus : null,
       decoration: InputDecoration(
         prefixIcon: Icon(icon),
         border: InputBorder.none,
@@ -135,6 +151,7 @@ class SigninInputsState extends State<SigninInputs> {
             padding: const EdgeInsets.all(20.0),
             child: _textField(
                 emailController, "Enter Your Email...", Icons.email, false),
+
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 20.0),

@@ -22,16 +22,8 @@ class SigninPage extends StatefulWidget {
 }
 
 class SigninPageState extends State<SigninPage> {
-  final emailController = TextEditingController();
-  final passController = TextEditingController();
   bool _visible = false;
 
-  @override
-  void dispose() {
-    emailController.dispose();
-    passController.dispose();
-    super.dispose();
-  }
 
   @override
   initState() {

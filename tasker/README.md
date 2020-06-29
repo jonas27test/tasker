@@ -25,6 +25,11 @@ bundletool build-apks --bundle=/home/joe/repos/tasker/tasker/build/app/outputs/b
     --key-pass=file:/MyApp/key.pwd
 
 
+## OR APK
+flutter build apk --split-per-abi
+flutter install -d ONEPLUS
+
+
 ## Web Build
 https://flutter.dev/docs/get-started/web
 

@@ -182,6 +182,32 @@ class DayModel extends ChangeNotifier {
 //      print(dateString);
     }
   }
+  Future<List<TaskModel>> movePleasureItemNextDay(int index) async {
+    String newDate = getNewDate(1);
+    String oldDate = dateString;
+    final prefs = await SharedPreferences.getInstance();
+    final response = await http
+        .get(Statics.TASKER_URL + '/getDay?date=' + newDate, headers: {
+      HttpHeaders.authorizationHeader: 'bearer: ' + prefs.getString('bearer')
+    });
+    if (response.statusCode == 200) {
+      List<TaskModel> pl =
+          DayModel.fromJson(json.decode(response.body)).pleasureList;
+      pl.add(this.pleasureList[index]);
+      this.dateString = newDate;
+      Future<http.Response> future = postList(pl, "/setPleasureList");
+      future.then((value) => {
+            if (value.statusCode == 200)
+              {
+                this.dateString = oldDate,
+                this.pleasureList.removeAt(index),
+                postList(pleasureList, "/setPleasureList"),
+                notifyListeners(),
+              },
+          });
+//      print(dateString);
+    }
+  }
 
   List<TaskModel> getPleasureList() {
     List<TaskModel> list = this.pleasureList.toList();
